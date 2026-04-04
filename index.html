@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Python Clean Code Cheatsheet | Best Practices & Tips</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background: #f1f5f9;
+      font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+      line-height: 1.5;
+      color: #0f172a;
+      padding: 2rem 1rem;
+    }
+
+    /* fallback system font if inter not loaded */
+    @import url('https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&family=JetBrains+Mono:wght@400;500&display=swap');
+
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+
+    /* header */
+    .header {
+      text-align: center;
+      margin-bottom: 2.5rem;
+    }
+
+    .header h1 {
+      font-size: 2.5rem;
+      font-weight: 700;
+      background: linear-gradient(135deg, #0f172a, #2563eb);
+      background-clip: text;
+      -webkit-background-clip: text;
+      color: transparent;
+      letter-spacing: -0.02em;
+      margin-bottom: 0.5rem;
+    }
+
+    .header p {
+      font-size: 1.1rem;
+      color: #334155;
+      max-width: 650px;
+      margin: 0 auto;
+      border-bottom: 2px solid #cbd5e1;
+      display: inline-block;
+      padding-bottom: 0.5rem;
+    }
+
+    .badge {
+      display: inline-block;
+      background: #e2e8f0;
+      padding: 0.2rem 0.8rem;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      font-weight: 500;
+      color: #1e40af;
+      margin-top: 0.8rem;
+    }
+
+    /* grid layout */
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
+      gap: 1.6rem;
+    }
+
+    /* card style */
+    .card {
+      background: #ffffff;
+      border-radius: 1.25rem;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.03), 0 2px 6px rgba(0,0,0,0.05);
+      transition: transform 0.1s ease, box-shadow 0.2s;
+      overflow: hidden;
+      border: 1px solid #e2e8f0;
+    }
+
+    .card:hover {
+      box-shadow: 0 20px 30px -12px rgba(0,0,0,0.1);
+      transform: translateY(-2px);
+    }
+
+    .card-header {
+      background: #f8fafc;
+      padding: 1rem 1.5rem;
+      border-bottom: 2px solid #e0e7ff;
+    }
+
+    .card-header h2 {
+      font-size: 1.4rem;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      color: #0f172a;
+    }
+
+    .card-header h2 i {
+      font-size: 1.4rem;
+    }
+
+    .card-body {
+      padding: 1.2rem 1.5rem 1.8rem;
+    }
+
+    .tip {
+      margin-bottom: 1.2rem;
+      border-left: 3px solid #3b82f6;
+      padding-left: 0.9rem;
+    }
+
+    .tip-title {
+      font-weight: 700;
+      font-size: 0.9rem;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: #2563eb;
+      margin-bottom: 0.3rem;
+    }
+
+    .tip-text {
+      color: #1e293b;
+      font-size: 0.95rem;
+    }
+
+    .code-block {
+      background: #0f172a;
+      color: #e2e8f0;
+      border-radius: 0.8rem;
+      padding: 0.8rem 1rem;
+      font-family: 'JetBrains Mono', 'Fira Code', monospace;
+      font-size: 0.8rem;
+      overflow-x: auto;
+      margin: 0.8rem 0;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+
+    .code-block code {
+      font-family: inherit;
+      font-size: 0.8rem;
+    }
+
+    .bad-example {
+      background: #fef2f2;
+      border-left: 4px solid #ef4444;
+      padding: 0.6rem 0.8rem;
+      border-radius: 0.6rem;
+      margin: 0.8rem 0;
+    }
+
+    .good-example {
+      background: #ecfdf5;
+      border-left: 4px solid #10b981;
+      padding: 0.6rem 0.8rem;
+      border-radius: 0.6rem;
+      margin: 0.8rem 0;
+    }
+
+    .label {
+      font-size: 0.7rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 0.3rem;
+      display: block;
+    }
+
+    .label-bad { color: #b91c1c; }
+    .label-good { color: #047857; }
+
+    hr {
+      margin: 1rem 0;
+      border: 0;
+      height: 1px;
+      background: #e2e8f0;
+    }
+
+    footer {
+      text-align: center;
+      margin-top: 3rem;
+      padding-top: 1.5rem;
+      color: #475569;
+      font-size: 0.85rem;
+      border-top: 1px solid #cbd5e1;
+    }
+
+    @media (max-width: 780px) {
+      .grid {
+        grid-template-columns: 1fr;
+      }
+      .header h1 {
+        font-size: 1.9rem;
+      }
+      .card-body {
+        padding: 1rem;
+      }
+    }
+
+    .inline-icon {
+      font-size: 1.2rem;
+    }
+
+    .zen {
+      background: #f1f5f9;
+      padding: 0.5rem 1rem;
+      border-radius: 1rem;
+      text-align: center;
+      font-style: italic;
+      font-weight: 500;
+      margin-top: 1rem;
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+  <div class="header">
+    <h1>🐍 Python Clean Code Cheatsheet</h1>
+    <p>Write readable, maintainable & pythonic code</p>
+    <div class="badge">PEP 8 · Zen of Python · Best practices</div>
+  </div>
+
+  <div class="grid">
+    
+    <!-- 1. NAMING CONVENTIONS -->
+    <div class="card">
+      <div class="card-header">
+        <h2>📛 Naming & Style</h2>
+      </div>
+      <div class="card-body">
+        <div class="tip">
+          <div class="tip-title">✔️ Variables & Functions</div>
+          <div class="tip-text">Use <code>snake_case</code> for variables, functions, methods. <br>Constants: <code>UPPER_SNAKE_CASE</code>. Classes: <code>PascalCase</code>.</div>
+        </div>
+        <div class="bad-example">
+          <span class="label label-bad">❌ DON'T</span>
+          <div class="code-block"><code>def GetUserData(): pass<br>userAge = 42<br>MAX_SIZE = 100  # misleading if mutable</code></div>
+        </div>
+        <div class="good-example">
+          <span class="label label-good">✅ DO</span>
+          <div class="code-block"><code>def get_user_data(): pass<br>user_age = 42<br>MAX_SIZE = 100   # constant</code></div>
+        </div>
+        <div class="tip">
+          <div class="tip-title">🎯 Meaningful Names</div>
+          <div class="tip-text">Avoid single letters (except loop counters i, j). Use descriptive names: <code>delay_seconds</code> not <code>d</code>.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 2. FUNCTIONS (small, pure, single responsibility) -->
+    <div class="card">
+      <div class="card-header">
+        <h2>⚙️ Functions Matter</h2>
+      </div>
+      <div class="card-body">
+        <div class="tip">
+          <div class="tip-title">📏 Single Responsibility</div>
+          <div class="tip-text">Each function does one thing, does it well, and does it only.</div>
+        </div>
+        <div class="bad-example">
+          <span class="label label-bad">❌ Too many tasks</span>
+          <div class="code-block"><code>def process_user(data):<br>    # validate + transform + save + email<br>    pass</code></div>
+        </div>
+        <div class="good-example">
+          <span class="label label-good">✅ Decompose</span>
+          <div class="code-block"><code>def validate_user(data): ...<br>def save_user(user): ...<br>def send_welcome_email(email): ...</code></div>
+        </div>
+        <div class="tip">
+          <div class="tip-title">🔄 Pure Functions (prefer)</div>
+          <div class="tip-text">Avoid side effects; same input → same output. Easier to test/debug.</div>
+        </div>
+        <div class="code-block"><code># bad: modifies global<br># good: returns new value</code></div>
+      </div>
+    </div>
+
+    <!-- 3. COMMENTS & DOCSTRINGS -->
+    <div class="card">
+      <div class="card-header">
+        <h2>💬 Comments & Docs</h2>
+      </div>
+      <div class="card-body">
+        <div class="tip">
+          <div class="tip-title">📌 Write self-documenting code</div>
+          <div class="tip-text">Use comments only for "why", not "what". Use docstrings for public APIs.</div>
+        </div>
+        <div class="good-example">
+          <span class="label label-good">✅ Docstring example</span>
+          <div class="code-block"><code>def calculate_tax(amount: float, rate: float) -> float:<br>    """Compute tax based on amount and percentage rate."""<br>    return amount * rate / 100</code></div>
+        </div>
+        <div class="bad-example">
+          <span class="label label-bad">❌ Obvious comment</span>
+          <div class="code-block"><code>i += 1  # increment i by 1</code></div>
+        </div>
+        <div class="tip">
+          <div class="tip-title">🧹 TODO & FIXME</div>
+          <div class="tip-text">Mark temporary notes but keep them tracked.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 4. ERROR HANDLING -->
+    <div class="card">
+      <div class="card-header">
+        <h2>⚠️ Error Handling</h2>
+      </div>
+      <div class="card-body">
+        <div class="tip">
+          <div class="tip-title">🎯 Specific Exceptions</div>
+          <div class="tip-text">Catch concrete exceptions, never <code>except:</code> bare.</div>
+        </div>
+        <div class="bad-example">
+          <span class="label label-bad">❌ Silent & broad</span>
+          <div class="code-block"><code>try:<br>    value = int(data)<br>except:<br>    pass</code></div>
+        </div>
+        <div class="good-example">
+          <span class="label label-good">✅ Explicit & informative</span>
+          <div class="code-block"><code>try:<br>    value = int(data)<br>except ValueError as e:<br>    logger.error(f"Invalid int: {e}")<br>    raise</code></div>
+        </div>
+        <div class="tip">
+          <div class="tip-title">📦 Use context managers for resources</div>
+          <div class="tip-text">Files, locks, connections → <code>with</code> statement.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 5. TYPE HINTS (modern python) -->
+    <div class="card">
+      <div class="card-header">
+        <h2>🔍 Type Hints (3.5+)</h2>
+      </div>
+      <div class="card-body">
+        <div class="tip">
+          <div class="tip-title">📈 Improve readability & tooling</div>
+          <div class="tip-text">Use mypy, pydantic, or just annotations.</div>
+        </div>
+        <div class="code-block"><code>from typing import List, Optional<br><br>def process_items(items: List[str], limit: Optional[int] = None) -> dict:<br>    ...</code></div>
+        <div class="good-example">
+          <span class="label label-good">✅ Clear intent</span>
+          <div class="code-block"><code>def greet(name: str) -> str:<br>    return f"Hello, {name}"</code></div>
+        </div>
+        <div class="tip">
+          <div class="tip-title">✨ Use `Union`, `Optional`, or `|` in Python 3.10+</div>
+          <div class="tip-text"><code>str | None</code> instead of <code>Optional[str]</code></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 6. COMPREHENSIONS & DATA STRUCTURES -->
+    <div class="card">
+      <div class="card-header">
+        <h2>🧩 Pythonic Data Handling</h2>
+      </div>
+      <div class="card-body">
+        <div class="tip">
+          <div class="tip-title">📋 List/Dict comprehensions</div>
+          <div class="tip-text">More expressive than map/filter for simple cases.</div>
+        </div>
+        <div class="bad-example">
+          <span class="label label-bad">❌ Verbose loop</span>
+          <div class="code-block"><code>squares = []<br>for i in range(10):<br>    squares.append(i*i)</code></div>
+        </div>
+        <div class="good-example">
+          <span class="label label-good">✅ Clean comprehension</span>
+          <div class="code-block"><code>squares = [i*i for i in range(10)]<br>evens = {i for i in data if i % 2 == 0}</code></div>
+        </div>
+        <div class="tip">
+          <div class="tip-title">🗂️ Avoid overcomplicating (max 2 loops/conditions)</div>
+          <div class="tip-text">If complex, use plain loops for readability.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 7. CONTEXT MANAGERS & RESOURCES -->
+    <div class="card">
+      <div class="card-header">
+        <h2>🔐 Context Managers</h2>
+      </div>
+      <div class="card-body">
+        <div class="tip">
+          <div class="tip-title">📂 File handling</div>
+          <div class="tip-text">Always use <code>with open(...) as f</code> → automatic closing.</div>
+        </div>
+        <div class="code-block"><code>with open("data.txt", "r") as file:<br>    content = file.read()<br># file closed outside block</code></div>
+        <div class="tip">
+          <div class="tip-title">🧵 Locks / database sessions</div>
+          <div class="tip-text"><code>with threading.Lock():</code> or sqlalchemy session.</div>
+        </div>
+        <div class="good-example">
+          <span class="label label-good">🔧 Custom context manager (contextlib)</span>
+          <div class="code-block"><code>from contextlib import contextmanager</code></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 8. F-STRINGS & MODERN SYNTAX -->
+    <div class="card">
+      <div class="card-header">
+        <h2>📝 F-strings & Modern Python</h2>
+      </div>
+      <div class="card-body">
+        <div class="tip">
+          <div class="tip-title">✨ F-strings over .format() / %</div>
+          <div class="tip-text">Clearer and faster (Python 3.6+).</div>
+        </div>
+        <div class="bad-example">
+          <span class="label label-bad">❌ Old style</span>
+          <div class="code-block"><code>print("Hello %s, you have %d" % (name, count))</code></div>
+        </div>
+        <div class="good-example">
+          <span class="label label-good">✅ Modern f-string</span>
+          <div class="code-block"><code>print(f"Hello {name}, you have {count} messages")</code></div>
+        </div>
+        <div class="tip">
+          <div class="tip-title">📅 pathlib over os.path</div>
+          <div class="tip-text">Object-oriented paths → cleaner and cross-platform.</div>
+        </div>
+        <div class="code-block"><code>from pathlib import Path<br>cfg = Path.home() / ".config" / "app" / "settings.toml"</code></div>
+      </div>
+    </div>
+
+    <!-- 9. MAGIC METHODS & CLASS DESIGN -->
+    <div class="card">
+      <div class="card-header">
+        <h2>🏗️ Classes & OOP Clean</h2>
+      </div>
+      <div class="card-body">
+        <div class="tip">
+          <div class="tip-title">🧱 Favor composition over inheritance</div>
+          <div class="tip-text">Keep hierarchies shallow. Use <code>@dataclass</code> for data containers.</div>
+        </div>
+        <div class="good-example">
+          <span class="label label-good">✅ dataclass</span>
+          <div class="code-block"><code>from dataclasses import dataclass<br><br>@dataclass<br>class Point:<br>    x: float<br>    y: float</code></div>
+        </div>
+        <div class="tip">
+          <div class="tip-title">🕵️‍♂️ Repr & Str</div>
+          <div class="tip-text">Define <code>__repr__</code> for debugging, <code>__str__</code> for users.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 10. LINTING & FORMATTING TOOLS -->
+    <div class="card">
+      <div class="card-header">
+        <h2>🧹 Tooling & Automation</h2>
+      </div>
+      <div class="card-body">
+        <div class="tip">
+          <div class="tip-title">⚡ Use formatters & linters</div>
+          <div class="tip-text"><code>ruff</code> / <code>black</code> / <code>isort</code> / <code>flake8</code> → enforce style.</div>
+        </div>
+        <div class="code-block"><code># Install and run<br>pip install ruff black<br>ruff check . && black .</code></div>
+        <div class="tip">
+          <div class="tip-title">🧪 Pre-commit hooks</div>
+          <div class="tip-text">Automate formatting before each commit.</div>
+        </div>
+        <div class="tip">
+          <div class="tip-title">📏 Line length: 79 (or 88 for black)</div>
+          <div class="tip-text">Keep code readable without horizontal scrolling.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 11. AVOID MUTABLE DEFAULTS -->
+    <div class="card">
+      <div class="card-header">
+        <h2>🚫 Dangerous Patterns</h2>
+      </div>
+      <div class="card-body">
+        <div class="tip">
+          <div class="tip-title">⚠️ Mutable default arguments</div>
+          <div class="tip-text">Never use list/dict as default value — it persists across calls.</div>
+        </div>
+        <div class="bad-example">
+          <span class="label label-bad">❌ Bug hidden</span>
+          <div class="code-block"><code>def add_item(item, lst=[]):<br>    lst.append(item)<br>    return lst</code></div>
+        </div>
+        <div class="good-example">
+          <span class="label label-good">✅ Use None pattern</span>
+          <div class="code-block"><code>def add_item(item, lst=None):<br>    if lst is None:<br>        lst = []<br>    lst.append(item)<br>    return lst</code></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 12. ITERATION & GENERATORS -->
+    <div class="card">
+      <div class="card-header">
+        <h2>🌀 Lazy & Efficient</h2>
+      </div>
+      <div class="card-body">
+        <div class="tip">
+          <div class="tip-title">⚙️ Use generators for large data</div>
+          <div class="tip-text">Yield instead of returning list → memory efficient.</div>
+        </div>
+        <div class="code-block"><code>def read_large_file(file_path):<br>    with open(file_path) as f:<br>        for line in f:<br>            yield line.strip()</code></div>
+        <div class="tip">
+          <div class="tip-title">🔁 Enumerate over range(len)</div>
+          <div class="tip-text">Use <code>enumerate</code> for index/value pairs.</div>
+        </div>
+        <div class="good-example">
+          <div class="code-block"><code>for idx, value in enumerate(items):<br>    print(f"{idx}: {value}")</code></div>
+        </div>
+      </div>
+    </div>
+
+  </div> <!-- end grid -->
+
+  <!-- BONUS: Zen of Python summary -->
+  <div class="zen">
+    💡 <strong>Zen of Python (PEP 20)</strong> — Beautiful is better than ugly. Explicit is better than implicit. Simple is better than complex. Readability counts.
+  </div>
+
+  <footer>
+    🧠 Clean code cheatsheet • Apply consistently, review with peers • <strong>Write code for humans first</strong><br>
+    Tips based on PEP 8, “Clean Code” principles, and Python community standards.
+  </footer>
+</div>
+</body>
+</html>
