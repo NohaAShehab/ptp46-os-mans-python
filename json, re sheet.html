@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Python re + json · Cheatsheet</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background: #eef2f5;
+      font-family: 'Segoe UI', 'Roboto', system-ui, -apple-system, 'Inter', 'SF Pro Text', monospace;
+      line-height: 1.5;
+      padding: 2rem 1.5rem;
+      color: #1e2a3e;
+    }
+
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+      background: transparent;
+    }
+
+    /* header */
+    .cheatsheet-header {
+      text-align: center;
+      margin-bottom: 2.5rem;
+    }
+
+    .cheatsheet-header h1 {
+      font-size: 2.4rem;
+      font-weight: 700;
+      background: linear-gradient(135deg, #0b2b3d, #1b4f6e);
+      background-clip: text;
+      -webkit-background-clip: text;
+      color: transparent;
+      letter-spacing: -0.3px;
+    }
+
+    .cheatsheet-header p {
+      color: #2c4c6c;
+      font-size: 1rem;
+      margin-top: 0.5rem;
+      border-bottom: 2px solid #cbdde6;
+      display: inline-block;
+      padding-bottom: 0.25rem;
+    }
+
+    /* grid layout */
+    .grid-2col {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2rem;
+    }
+
+    /* cards */
+    .module-card {
+      background: #ffffff;
+      border-radius: 28px;
+      box-shadow: 0 12px 28px rgba(0, 0, 0, 0.05), 0 2px 4px rgba(0, 0, 0, 0.02);
+      overflow: hidden;
+      transition: box-shadow 0.2s;
+      backdrop-filter: blur(0px);
+      border: 1px solid #e9edf2;
+    }
+
+    .module-card:hover {
+      box-shadow: 0 20px 32px -12px rgba(0, 20, 40, 0.12);
+    }
+
+    .card-header {
+      background: #f7fafc;
+      padding: 1.25rem 1.8rem;
+      border-bottom: 2px solid #e2e8f0;
+    }
+
+    .card-header h2 {
+      font-size: 1.8rem;
+      font-weight: 600;
+      letter-spacing: -0.2px;
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+    }
+
+    .card-header h2 span {
+      background: #1e4663;
+      color: white;
+      font-size: 0.85rem;
+      font-weight: 500;
+      padding: 0.2rem 0.7rem;
+      border-radius: 40px;
+      font-family: monospace;
+    }
+
+    .card-body {
+      padding: 1.6rem 1.8rem;
+    }
+
+    /* section inside card */
+    .sub-section {
+      margin-bottom: 2rem;
+    }
+
+    .sub-section:last-child {
+      margin-bottom: 0;
+    }
+
+    .sub-section h3 {
+      font-size: 1.3rem;
+      font-weight: 600;
+      margin-bottom: 1rem;
+      color: #0f3b4f;
+      border-left: 5px solid #2c7da0;
+      padding-left: 0.9rem;
+    }
+
+    .sub-section h4 {
+      font-weight: 600;
+      font-size: 1rem;
+      margin: 1rem 0 0.5rem 0;
+      color: #1f5068;
+      display: inline-block;
+      background: #eef3f8;
+      padding: 0.2rem 0.8rem;
+      border-radius: 20px;
+    }
+
+    /* tables */
+    .func-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.85rem;
+      margin-bottom: 1rem;
+    }
+
+    .func-table th {
+      text-align: left;
+      background: #eef3f9;
+      padding: 0.6rem 0.8rem;
+      font-weight: 600;
+      color: #1c4a6e;
+      border-radius: 16px 16px 0 0;
+    }
+
+    .func-table td {
+      padding: 0.65rem 0.8rem;
+      border-bottom: 1px solid #e6edf2;
+      vertical-align: top;
+      font-family: 'SF Mono', 'Fira Code', 'Cascadia Code', monospace;
+    }
+
+    .func-table tr:last-child td {
+      border-bottom: none;
+    }
+
+    .code-badge {
+      background: #1e2f3c;
+      color: #eef4ff;
+      font-family: 'SF Mono', 'Fira Code', monospace;
+      font-size: 0.8rem;
+      padding: 0.2rem 0.5rem;
+      border-radius: 12px;
+      display: inline-block;
+    }
+
+    pre {
+      background: #0f1a24;
+      color: #e2eaf1;
+      padding: 1rem;
+      border-radius: 20px;
+      overflow-x: auto;
+      font-size: 0.8rem;
+      font-family: 'SF Mono', 'Fira Code', 'Cascadia Code', monospace;
+      line-height: 1.45;
+      margin: 0.8rem 0;
+      border: 1px solid #2a4050;
+    }
+
+    code {
+      font-family: 'SF Mono', 'Fira Code', monospace;
+      background: #eef2f6;
+      padding: 0.2rem 0.4rem;
+      border-radius: 10px;
+      font-size: 0.85rem;
+      color: #bc3f2e;
+    }
+
+    pre code {
+      background: transparent;
+      padding: 0;
+      color: inherit;
+      font-size: 0.8rem;
+    }
+
+    .pattern-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin: 0.8rem 0;
+    }
+
+    .pattern-badge {
+      background: #f0f4f9;
+      padding: 0.25rem 0.9rem;
+      border-radius: 30px;
+      font-family: monospace;
+      font-size: 0.8rem;
+      font-weight: 500;
+      border: 1px solid #cbdde6;
+    }
+
+    hr {
+      margin: 1rem 0;
+      border: none;
+      height: 1px;
+      background: linear-gradient(to right, #cbdde6, transparent);
+    }
+
+    .footnote {
+      margin-top: 2rem;
+      text-align: center;
+      font-size: 0.75rem;
+      color: #5a6e7c;
+      border-top: 1px solid #cbdde6;
+      padding-top: 1.5rem;
+    }
+
+    @media (max-width: 780px) {
+      body {
+        padding: 1.2rem;
+      }
+      .grid-2col {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+      }
+      .card-body {
+        padding: 1.2rem;
+      }
+      .func-table th, .func-table td {
+        padding: 0.5rem;
+      }
+      .card-header h2 {
+        font-size: 1.5rem;
+      }
+    }
+
+    .highlight {
+      background: #fef9e3;
+      border-left: 4px solid #e6b422;
+      padding: 0.5rem 1rem;
+      border-radius: 16px;
+      margin: 0.8rem 0;
+      font-size: 0.85rem;
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+  <div class="cheatsheet-header">
+    <h1>📘 Python re + json · Modern Cheatsheet</h1>
+    <p>quick reference · regex patterns · serialization · real-world snippets</p>
+  </div>
+
+  <div class="grid-2col">
+    <!-- ========== LEFT COLUMN: re module ========== -->
+    <div class="module-card">
+      <div class="card-header">
+        <h2>🔍 re — Regular Expressions <span>built‑in</span></h2>
+      </div>
+      <div class="card-body">
+        
+        <!-- core functions -->
+        <div class="sub-section">
+          <h3>⚡ Core functions</h3>
+          <table class="func-table">
+            <thead>
+              <tr><th>Function</th><th>Description & quick example</th></tr>
+            </thead>
+            <tbody>
+              <tr><td><code>re.compile(pattern, flags)</code></td><td>Pre‑compile regex for performance<br><code>p = re.compile(r'\d+')</code></td></tr>
+              <tr><td><code>re.search(pattern, str)</code></td><td>Find first match anywhere → match object<br><code>re.search(r'\d+', 'id42')</code></td></tr>
+              <tr><td><code>re.match(pattern, str)</code></td><td>Match only at string start<br><code>re.match(r'Hello', 'Hello world')</code></td></tr>
+              <tr><td><code>re.fullmatch(pattern, str)</code></td><td>Entire string must match<br><code>re.fullmatch(r'\d+', '123')</code></td></tr>
+              <tr><td><code>re.findall(pattern, str)</code></td><td>Return list of all non‑overlapping matches<br><code>re.findall(r'\w+', 'Hi there!') → ['Hi','there']</code></td></tr>
+              <tr><td><code>re.finditer(pattern, str)</code></td><td>Iterator of match objects (memory efficient)</td></tr>
+              <tr><td><code>re.sub(pattern, repl, str, count=0)</code></td><td>Replace matches<br><code>re.sub(r'\s+', '-', 'a b c') → 'a-b-c'</code></td></tr>
+              <tr><td><code>re.split(pattern, str, maxsplit=0)</code></td><td>Split by regex pattern<br><code>re.split(r'[,;]\s*', 'a,b; c')</code></td></tr>
+              <tr><td><code>re.escape(str)</code></td><td>Escape all regex metacharacters<br><code>re.escape('(price) $5')</code></td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- common patterns & metacharacters -->
+        <div class="sub-section">
+          <h3>🎯 Metacharacters & shortcuts</h3>
+          <div class="pattern-list">
+            <span class="pattern-badge">.</span> <span class="pattern-badge">^</span> <span class="pattern-badge">$</span> <span class="pattern-badge">*</span> <span class="pattern-badge">+</span> <span class="pattern-badge">?</span>
+            <span class="pattern-badge">{n,m}</span> <span class="pattern-badge">[...]</span> <span class="pattern-badge">[^...]</span> <span class="pattern-badge">|</span> <span class="pattern-badge">( )</span>
+          </div>
+          <table class="func-table">
+            <tr><td><code>\d</code></td><td>digit [0-9]</td><td><code>\D</code></td><td>non‑digit</td></tr>
+            <tr><td><code>\w</code></td><td>word [a-zA-Z0-9_]</td><td><code>\W</code></td><td>non‑word</td></tr>
+            <tr><td><code>\s</code></td><td>whitespace</td><td><code>\S</code></td><td>non‑whitespace</td></tr>
+            <tr><td><code>\b</code></td><td>word boundary</td><td><code>\B</code></td><td>non‑boundary</td></tr>
+          </table>
+          <div class="highlight">
+            💡 <strong>Raw strings are best</strong>: <code>r'\d+'</code> avoids escape hell.
+          </div>
+        </div>
+
+        <!-- flags -->
+        <div class="sub-section">
+          <h3>🚩 Useful flags</h3>
+          <div class="pattern-list">
+            <span class="pattern-badge">re.I / re.IGNORECASE</span>
+            <span class="pattern-badge">re.M / re.MULTILINE</span>
+            <span class="pattern-badge">re.S / re.DOTALL</span>
+            <span class="pattern-badge">re.X / re.VERBOSE</span>
+          </div>
+          <pre><code>re.search(r'^python', 'Python rocks', re.I)   # case‑insensitive
+re.findall(r'^\w+', 'line1\nline2', re.M)     # ^$ match per line
+re.findall(r'foo.bar', 'foo\nbar', re.S)      # dot matches newline</code></pre>
+        </div>
+
+        <!-- practical patterns -->
+        <div class="sub-section">
+          <h3>📌 Common regex patterns (examples)</h3>
+          <pre><code># Email (simplified)
+r'[\w\.-]+@[\w\.-]+\.\w+'
+
+# IPv4 address
+r'\b(?:[0-9]{1,3}\.){3}[0-9]{1,3}\b'
+
+# Date YYYY-MM-DD
+r'\d{4}-\d{2}-\d{2}'
+
+# Extract groups
+match = re.search(r'(\d{3})-(\d{2,4})', 'Code: 123-4567')
+area, num = match.groups()   # ('123', '4567')</code></pre>
+          <h4>📎 match object methods</h4>
+          <pre><code>m = re.search(r'(\d+)x(\d+)', '1920x1080')
+m.group(0)   # '1920x1080'
+m.group(1)   # '1920'
+m.groups()   # ('1920', '1080')
+m.start(), m.end()</code></pre>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========== RIGHT COLUMN: json module ========== -->
+    <div class="module-card">
+      <div class="card-header">
+        <h2>📦 json — JavaScript Object Notation <span>built‑in</span></h2>
+      </div>
+      <div class="card-body">
+        
+        <!-- serialization / deserialization -->
+        <div class="sub-section">
+          <h3>🔄 Core functions</h3>
+          <table class="func-table">
+            <thead><tr><th>Function</th><th>Purpose</th></tr></thead>
+            <tbody>
+              <tr><td><code>json.dumps(obj, **kwargs)</code></td><td>Serialize Python object → JSON string</td></tr>
+              <tr><td><code>json.dump(obj, file, **kwargs)</code></td><td>Write JSON to file‑like object</td></tr>
+              <tr><td><code>json.loads(json_string)</code></td><td>Parse JSON string → Python object</td></tr>
+              <tr><td><code>json.load(file)</code></td><td>Read JSON from file</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- essential parameters -->
+        <div class="sub-section">
+          <h3>⚙️ Key parameters (dumps/dump)</h3>
+          <div class="pattern-list">
+            <span class="pattern-badge">indent</span>
+            <span class="pattern-badge">sort_keys</span>
+            <span class="pattern-badge">ensure_ascii</span>
+            <span class="pattern-badge">separators</span>
+            <span class="pattern-badge">default</span>
+          </div>
+          <pre><code>data = {"name": "Moscow", "temp": -5, "ids": [1,2,3]}
+
+# Pretty print with sorted keys
+json.dumps(data, indent=2, sort_keys=True)
+
+# Compact output (no extra spaces)
+json.dumps(data, separators=(',', ':'))
+
+# Keep Unicode characters readable
+json.dumps({"city": "巴黎"}, ensure_ascii=False)  # → {"city": "巴黎"}</code></pre>
+        </div>
+
+        <!-- file IO examples -->
+        <div class="sub-section">
+          <h3>📁 File read / write</h3>
+          <pre><code># Write to file
+with open('data.json', 'w', encoding='utf-8') as f:
+    json.dump(data, f, indent=2, ensure_ascii=False)
+
+# Load from file
+with open('data.json', 'r', encoding='utf-8') as f:
+    restored = json.load(f)</code></pre>
+          <div class="highlight">
+            ⚠️ Always specify <code>encoding='utf-8'</code> when dealing with non‑ASCII.
+          </div>
+        </div>
+
+        <!-- type mapping table -->
+        <div class="sub-section">
+          <h3>🔁 Python ↔ JSON conversion</h3>
+          <table class="func-table">
+            <tr><td><strong>Python</strong></td><td><strong>JSON</strong></td></tr>
+            <tr><td>dict</td><td>object</td></tr>
+            <tr><td>list, tuple</td><td>array</td></tr>
+            <tr><td>str</td><td>string</td></tr>
+            <tr><td>int, float</td><td>number</td></tr>
+            <tr><td>True</td><td>true</td></tr>
+            <tr><td>False</td><td>false</td></tr>
+            <tr><td>None</td><td>null</td></tr>
+          </table>
+        </div>
+
+        <!-- advanced: custom objects & error handling -->
+        <div class="sub-section">
+          <h3>🧩 Custom objects & error handling</h3>
+          <pre><code>class Point:
+    def __init__(self, x, y):
+        self.x = x
+        self.y = y
+
+# Custom encoder using default parameter
+def encode_point(obj):
+    if isinstance(obj, Point):
+        return {"__type__": "Point", "x": obj.x, "y": obj.y}
+    raise TypeError
+
+point_json = json.dumps(Point(3,5), default=encode_point)
+
+# Handle JSON decode errors
+import json
+try:
+    data = json.loads('{"invalid":}')
+except json.JSONDecodeError as e:
+    print(f"JSON error: {e} at line {e.lineno}")</code></pre>
+          <h4>📌 quick tips</h4>
+          <ul style="margin-left: 1.2rem; color: #2c4e6e;">
+            <li><code>json.dump()</code> / <code>load()</code> work on file streams, <code>dumps</code>/<code>loads</code> for strings.</li>
+            <li>Use <code>default=lambda obj: obj.__dict__</code> for simple objects.</li>
+            <li><code>sort_keys</code> helps stable diffs / version control.</li>
+          </ul>
+        </div>
+
+        <!-- real world snippet -->
+        <div class="sub-section">
+          <h3>✨ Real‑world snippet: fetch & parse</h3>
+          <pre><code>import json, requests   # (requests demo concept)
+# response = requests.get("https://api.example.com/data")
+# data = response.json()   # requests has built‑in .json()
+# but for raw json string:
+raw = '{"status":"ok","results":[1,2,3]}'
+obj = json.loads(raw)
+print(obj["results"][0])   # 1
+
+# Pretty print nested structures
+print(json.dumps(obj, indent=2))</code></pre>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- bonus: regex+json side note -->
+  <div style="margin-top: 2rem; background: #eaf4e8; border-radius: 24px; padding: 1rem 1.8rem; border-left: 6px solid #2c7da0;">
+    <p style="font-weight: 500;">🧠 <strong>Pro tip — combine both modules:</strong> Use <code>re.sub</code> to clean strings before <code>json.loads</code> or extract values from semi‑structured logs → then serialize with <code>json.dump</code>.</p>
+    <pre style="margin-top: 0.6rem; background: #1e2a32;"><code>import re, json
+raw_log = 'user=alice, payload={"msg": "hello"}'
+payload_str = re.search(r'payload=(.*)$', raw_log).group(1)
+data = json.loads(payload_str)   # {'msg': 'hello'}</code></pre>
+  </div>
+
+  <div class="footnote">
+    🐍 Python 3.10+ · regex flags · JSON encoder/decoder · best practices · MIT style reference
+  </div>
+</div>
+</body>
+</html>
