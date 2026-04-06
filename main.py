@@ -18,3 +18,5 @@ if __name__ == '__main__':
 
 print(isinstance(emp, object))
 
+from abc import ABC, abstractmethod
+

@@ -1,0 +1,908 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Python Magic Methods - Complete Cheatsheet</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 40px 20px;
+            color: #2d3748;
+        }
+
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            text-align: center;
+            color: white;
+            font-size: 2.8rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #e2e8f0;
+            margin-bottom: 40px;
+            font-size: 1.2rem;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(550px, 1fr));
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            transition: transform 0.2s, box-shadow 0.2s;
+            overflow-x: auto;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.15);
+        }
+
+        .card h2 {
+            color: #667eea;
+            font-size: 1.6rem;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 3px solid #e2e8f0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .method-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+
+        .method-table td {
+            padding: 12px 10px;
+            border-bottom: 1px solid #f0f0f0;
+            vertical-align: top;
+        }
+
+        .method-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .method-name {
+            font-family: 'Courier New', monospace;
+            font-weight: 700;
+            color: #2c3e66;
+            width: 32%;
+            font-size: 0.95rem;
+            background: #f7fafc;
+            padding: 8px 12px;
+            border-radius: 6px;
+        }
+
+        .method-desc {
+            color: #4a5568;
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+
+        .example {
+            background: #2d3748;
+            color: #e2e8f0;
+            padding: 15px;
+            margin-top: 15px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.85rem;
+            overflow-x: auto;
+        }
+
+        .example pre {
+            margin: 0;
+            color: #68d391;
+            line-height: 1.5;
+        }
+
+        .example-title {
+            font-weight: bold;
+            color: #fbbf24;
+            margin-bottom: 8px;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .note {
+            background: #fef5e7;
+            border-left: 4px solid #f39c12;
+            padding: 10px 15px;
+            margin-top: 15px;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            color: #7d6608;
+        }
+
+        .tip {
+            background: #e8f5e9;
+            border-left: 4px solid #4caf50;
+            padding: 10px 15px;
+            margin-top: 15px;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            color: #1b5e20;
+        }
+
+        footer {
+            text-align: center;
+            color: white;
+            margin-top: 40px;
+            padding: 20px;
+            background: rgba(0,0,0,0.2);
+            border-radius: 12px;
+        }
+
+        @media (max-width: 768px) {
+            .grid {
+                grid-template-columns: 1fr;
+            }
+            
+            body {
+                padding: 20px 10px;
+            }
+            
+            h1 {
+                font-size: 1.8rem;
+            }
+            
+            .method-name {
+                width: 40%;
+                font-size: 0.85rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🐍 Python Magic Methods Complete Cheatsheet</h1>
+        <div class="subtitle">Dunder Methods — Unlocking Python's Inner Magic ✨</div>
+
+        <div class="grid">
+            <!-- Initialization & Representation -->
+            <div class="card">
+                <h2>🔧 Initialization & Representation</h2>
+                <table class="method-table">
+                    <tr><td class="method-name">__new__(cls, *args, **kwargs)</td>
+                        <td class="method-desc"><strong>Creates new instance before __init__</strong><br>
+                        Controls instance creation. Useful for singletons or immutable objects. Called automatically before __init__.</td>
+                    </tr>
+                    <tr><td class="method-name">__init__(self, *args, **kwargs)</td>
+                        <td class="method-desc"><strong>Constructor - initializes instance</strong><br>
+                        Sets up initial state. Most commonly overridden magic method. Called after __new__.</td>
+                    </tr>
+                    <tr><td class="method-name">__del__(self)</td>
+                        <td class="method-desc"><strong>Destructor (not guaranteed to be called)</strong><br>
+                        Called when object is garbage collected. Use with caution - finalizers can cause issues.</td>
+                    </tr>
+                    <tr><td class="method-name">__repr__(self)</td>
+                        <td class="method-desc"><strong>Official string representation</strong><br>
+                        Used by repr(), should be unambiguous and ideally eval-able. For developers.</td>
+                    </tr>
+                    <tr><td class="method-name">__str__(self)</td>
+                        <td class="method-desc"><strong>User-friendly string representation</strong><br>
+                        Used by str(), print(), and f-strings. For end users. Falls back to __repr__ if missing.</td>
+                    </tr>
+                    <tr><td class="method-name">__format__(self, format_spec)</td>
+                        <td class="method-desc"><strong>Custom formatting for f-strings</strong><br>
+                        Controls f"{obj:format_spec}" and format(obj, format_spec).</td>
+                    </tr>
+                    <tr><td class="method-name">__hash__(self)</td>
+                        <td class="method-desc"><strong>Returns integer hash for dict/set keys</strong><br>
+                        Must be consistent with __eq__. If __eq__ defined, __hash__ becomes None unless manually set.</td>
+                    </tr>
+                    <tr><td class="method-name">__bool__(self)</td>
+                        <td class="method-desc"><strong>Truthiness value</strong><br>
+                        Called for bool(obj) and if obj:. Falls back to __len__ if not defined.</td>
+                    </tr>
+                </table>
+                <div class="example">
+                    <div class="example-title">📘 Example:</div>
+                    <pre>class Book:
+    def __new__(cls, title):
+        print(f"Creating instance of {title}")
+        return super().__new__(cls)
+    
+    def __init__(self, title, author):
+        self.title = title
+        self.author = author
+    
+    def __repr__(self):
+        return f"Book('{self.title}', '{self.author}')"
+    
+    def __str__(self):
+        return f"{self.title} by {self.author}"
+    
+    def __bool__(self):
+        return len(self.title) > 0
+    
+    def __hash__(self):
+        return hash((self.title, self.author))
+
+# Usage
+book = Book("1984", "Orwell")
+print(repr(book))  # Book('1984', 'Orwell')
+print(str(book))   # 1984 by Orwell
+print(bool(book))  # True</pre>
+                </div>
+                <div class="tip">💡 <strong>Pro tip:</strong> Always define __repr__ for debugging. If __eq__ is defined, consider defining __hash__ for dictionary keys.</div>
+            </div>
+
+            <!-- Attribute Access -->
+            <div class="card">
+                <h2>🔍 Attribute Access Control</h2>
+                <table class="method-table">
+                    <tr><td class="method-name">__getattr__(self, name)</td>
+                        <td class="method-desc"><strong>Called when attribute lookup fails normally</strong><br>
+                        Only called for missing attributes. Perfect for dynamic attributes or fallbacks.</td>
+                    </tr>
+                    <tr><td class="method-name">__setattr__(self, name, value)</td>
+                        <td class="method-desc"><strong>Intercepts all attribute assignment</strong><br>
+                        Use super().__setattr__() to avoid recursion. Great for validation or logging.</td>
+                    </tr>
+                    <tr><td class="method-name">__delattr__(self, name)</td>
+                        <td class="method-desc"><strong>Called when deleting attribute</strong><br>
+                        Intercepts del obj.attr. Use with super().__delattr__().</td>
+                    </tr>
+                    <tr><td class="method-name">__getattribute__(self, name)</td>
+                        <td class="method-desc"><strong>Called for EVERY attribute access</strong><br>
+                        Extremely powerful but dangerous. Can break normal attribute access if not careful.</td>
+                    </tr>
+                    <tr><td class="method-name">__dir__(self)</td>
+                        <td class="method-desc"><strong>Customizes dir() output</strong><br>
+                        Returns list of attributes. Affects auto-completion in IDEs.</td>
+                    </tr>
+                </table>
+                <div class="example">
+                    <div class="example-title">📘 Example: Lazy Loading & Validation</div>
+                    <pre>class LazyPerson:
+    def __init__(self, name):
+        self.name = name
+        self._data = {}
+    
+    def __getattr__(self, name):
+        # Called only for missing attributes
+        print(f"Computing {name} dynamically...")
+        return f"Dynamic {name}"
+    
+    def __setattr__(self, name, value):
+        # Validate age before setting
+        if name == 'age' and value < 0:
+            raise ValueError("Age cannot be negative!")
+        super().__setattr__(name, value)
+    
+    def __getattribute__(self, name):
+        # Called for ALL attribute access
+        print(f"Accessing {name}")
+        return super().__getattribute__(name)
+
+p = LazyPerson("Alice")
+p.age = 30          # Validated
+# p.age = -5        # Raises ValueError
+print(p.non_existent)  # Computed dynamically</pre>
+                </div>
+                <div class="note">⚠️ <strong>Warning:</strong> __getattribute__ is called for every attribute access including self.attr inside the method itself - always use super() to avoid infinite recursion.</div>
+            </div>
+
+            <!-- Container & Sequence -->
+            <div class="card">
+                <h2>📦 Container & Sequence Protocol</h2>
+                <table class="method-table">
+                    <tr><td class="method-name">__len__(self)</td>
+                        <td class="method-desc"><strong>Length of container</strong><br>
+                        Called by len(obj). Essential for sequence-like objects.</td>
+                    </tr>
+                    <tr><td class="method-name">__getitem__(self, key)</td>
+                        <td class="method-desc"><strong>Element access by index/key</strong><br>
+                        Enables obj[index], obj[key], and slicing.</td>
+                    </tr>
+                    <tr><td class="method-name">__setitem__(self, key, value)</td>
+                        <td class="method-desc"><strong>Assign element by index/key</strong><br>
+                        Enables obj[index] = value and obj[key] = value.</td>
+                    </tr>
+                    <tr><td class="method-name">__delitem__(self, key)</td>
+                        <td class="method-desc"><strong>Delete element by index/key</strong><br>
+                        Enables del obj[index] and del obj[key].</td>
+                    </tr>
+                    <tr><td class="method-name">__contains__(self, item)</td>
+                        <td class="method-desc"><strong>Membership test</strong><br>
+                        Enables 'item in obj'. Falls back to iteration if not defined.</td>
+                    </tr>
+                    <tr><td class="method-name">__iter__(self)</td>
+                        <td class="method-desc"><strong>Returns iterator</strong><br>
+                        Enables for loops, list(), tuple(), etc. Should return iterator object.</td>
+                    </tr>
+                    <tr><td class="method-name">__reversed__(self)</td>
+                        <td class="method-desc"><strong>Returns reverse iterator</strong><br>
+                        Called by reversed(). Not required for reversed() to work if __len__ and __getitem__ exist.</td>
+                    </tr>
+                    <tr><td class="method-name">__missing__(self, key)</td>
+                        <td class="method-desc"><strong>Dict subclass: handle missing keys</strong><br>
+                        Called when key missing in dict subclasses (not regular dict).</td>
+                    </tr>
+                </table>
+                <div class="example">
+                    <div class="example-title">📘 Example: Custom Range Class</div>
+                    <pre>class CustomRange:
+    def __init__(self, start, end):
+        self.start = start
+        self.end = end
+        self._data = list(range(start, end))
+    
+    def __len__(self):
+        return len(self._data)
+    
+    def __getitem__(self, index):
+        if isinstance(index, slice):
+            # Handle slicing
+            return self._data[index]
+        if index < 0 or index >= len(self):
+            raise IndexError("Index out of range")
+        return self._data[index]
+    
+    def __setitem__(self, index, value):
+        self._data[index] = value
+    
+    def __contains__(self, item):
+        return item in self._data
+    
+    def __iter__(self):
+        return iter(self._data)
+    
+    def __reversed__(self):
+        return reversed(self._data)
+
+# Usage
+cr = CustomRange(1, 5)
+print(len(cr))        # 4
+print(cr[2])          # 3
+print(3 in cr)        # True
+for num in cr:
+    print(num)        # 1,2,3,4
+print(list(reversed(cr)))  # [4,3,2,1]</pre>
+                </div>
+                <div class="tip">💡 <strong>Pro tip:</strong> Implement __getitem__ and __len__ to get automatic iteration, membership tests, and reversed() support!</div>
+            </div>
+
+            <!-- Numeric Operators -->
+            <div class="card">
+                <h2>➕ Arithmetic Operators</h2>
+                <table class="method-table">
+                    <tr><td class="method-name">__add__(self, other)</td><td class="method-desc">+ addition</td></tr>
+                    <tr><td class="method-name">__sub__(self, other)</td><td class="method-desc">- subtraction</td></tr>
+                    <tr><td class="method-name">__mul__(self, other)</td><td class="method-desc">* multiplication</td></tr>
+                    <tr><td class="method-name">__truediv__(self, other)</td><td class="method-desc">/ true division</td></tr>
+                    <tr><td class="method-name">__floordiv__(self, other)</td><td class="method-desc">// floor division</td></tr>
+                    <tr><td class="method-name">__mod__(self, other)</td><td class="method-desc">% modulo/remainder</td></tr>
+                    <tr><td class="method-name">__pow__(self, other[, modulo])</td><td class="method-desc">** power (optional modulo)</td></tr>
+                    <tr><td class="method-name">__matmul__(self, other)</td><td class="method-desc">@ matrix multiplication (Python 3.5+)</td></tr>
+                    <tr><td class="method-name">__neg__(self)</td><td class="method-desc">-obj unary negation</td></tr>
+                    <tr><td class="method-name">__pos__(self)</td><td class="method-desc">+obj unary positive</td></tr>
+                    <tr><td class="method-name">__abs__(self)</td><td class="method-desc">abs(obj) absolute value</td></tr>
+                    <tr><td class="method-name">__invert__(self)</td><td class="method-desc">~ bitwise NOT</td></tr>
+                </table>
+                <div class="example">
+                    <div class="example-title">📘 Example: 2D Vector Class</div>
+                    <pre>class Vector2D:
+    def __init__(self, x, y):
+        self.x = x
+        self.y = y
+    
+    def __repr__(self):
+        return f"Vector2D({self.x}, {self.y})"
+    
+    def __add__(self, other):
+        return Vector2D(self.x + other.x, self.y + other.y)
+    
+    def __sub__(self, other):
+        return Vector2D(self.x - other.x, self.y - other.y)
+    
+    def __mul__(self, scalar):
+        # Scalar multiplication
+        if isinstance(scalar, (int, float)):
+            return Vector2D(self.x * scalar, self.y * scalar)
+        return NotImplemented
+    
+    def __rmul__(self, scalar):
+        # For scalar * vector
+        return self.__mul__(scalar)
+    
+    def __abs__(self):
+        return (self.x ** 2 + self.y ** 2) ** 0.5
+    
+    def __neg__(self):
+        return Vector2D(-self.x, -self.y)
+
+# Usage
+v1 = Vector2D(2, 3)
+v2 = Vector2D(1, 4)
+print(v1 + v2)    # Vector2D(3, 7)
+print(v1 - v2)    # Vector2D(1, -1)
+print(v1 * 3)     # Vector2D(6, 9)
+print(3 * v1)     # Vector2D(6, 9)
+print(abs(v1))    # 3.605551275463989
+print(-v1)        # Vector2D(-2, -3)</pre>
+                </div>
+                <div class="note">📌 <strong>Note:</strong> Return NotImplemented (not raise NotImplementedError) to let Python try reverse operation.</div>
+            </div>
+
+            <!-- Reverse & In-place Operators -->
+            <div class="card">
+                <h2>🔄 Reflected & In-place Operators</h2>
+                <table class="method-table">
+                    <tr><td class="method-name">__radd__(self, other)</td><td class="method-desc">Reflected addition: other + self when self.__add__ fails</td></tr>
+                    <tr><td class="method-name">__rsub__(self, other)</td><td class="method-desc">Reflected subtraction: other - self</td></tr>
+                    <tr><td class="method-name">__rmul__(self, other)</td><td class="method-desc">Reflected multiplication: other * self</td></tr>
+                    <tr><td class="method-name">__rtruediv__(self, other)</td><td class="method-desc">Reflected division: other / self</td></tr>
+                    <tr><td class="method-name">__iadd__(self, other)</td><td class="method-desc">In-place addition: += (should return self)</td></tr>
+                    <tr><td class="method-name">__isub__(self, other)</td><td class="method-desc">In-place subtraction: -=</td></tr>
+                    <tr><td class="method-name">__imul__(self, other)</td><td class="method-desc">In-place multiplication: *=</td></tr>
+                    <tr><td class="method-name">__itruediv__(self, other)</td><td class="method-desc">In-place division: /=</td></tr>
+                    <tr><td class="method-name">__imatmul__(self, other)</td><td class="method-desc">In-place matrix multiplication: @=</td></tr>
+                </table>
+                <div class="example">
+                    <div class="example-title">📘 Example: Accumulator with In-place Operations</div>
+                    <pre>class Accumulator:
+    def __init__(self, value=0):
+        self.value = value
+    
+    def __repr__(self):
+        return f"Accumulator({self.value})"
+    
+    def __add__(self, other):
+        # Regular addition
+        return Accumulator(self.value + other)
+    
+    def __radd__(self, other):
+        # For other + accumulator
+        return Accumulator(other + self.value)
+    
+    def __iadd__(self, other):
+        # In-place addition (modifies self)
+        self.value += other
+        return self  # Must return self
+    
+    def __isub__(self, other):
+        self.value -= other
+        return self
+
+# Usage
+acc = Accumulator(10)
+print(5 + acc)      # Accumulator(15) - uses __radd__
+acc += 5            # Uses __iadd__
+print(acc)          # Accumulator(15)
+acc -= 3
+print(acc)          # Accumulator(12)</pre>
+                </div>
+                <div class="tip">💡 <strong>Pro tip:</strong> In-place methods should modify self AND return self to support chaining: obj += 5 += 3</div>
+            </div>
+
+            <!-- Comparisons -->
+            <div class="card">
+                <h2>⚖️ Comparison Operators</h2>
+                <table class="method-table">
+                    <tr><td class="method-name">__eq__(self, other)</td><td class="method-desc">== equality</td></tr>
+                    <tr><td class="method-name">__ne__(self, other)</td><td class="method-desc">!= inequality (defaults to not __eq__ if missing)</td></tr>
+                    <tr><td class="method-name">__lt__(self, other)</td><td class="method-desc">&lt; less than</td></tr>
+                    <tr><td class="method-name">__le__(self, other)</td><td class="method-desc">&lt;= less than or equal</td></tr>
+                    <tr><td class="method-name">__gt__(self, other)</td><td class="method-desc">&gt; greater than</td></tr>
+                    <tr><td class="method-name">__ge__(self, other)</td><td class="method-desc">&gt;= greater than or equal</td></tr>
+                </table>
+                <div class="example">
+                    <div class="example-title">📘 Example: Comparable Person</div>
+                    <pre>from functools import total_ordering
+
+@total_ordering  # Implements missing comparisons automatically
+class Person:
+    def __init__(self, name, age):
+        self.name = name
+        self.age = age
+    
+    def __repr__(self):
+        return f"Person('{self.name}', {self.age})"
+    
+    def __eq__(self, other):
+        if not isinstance(other, Person):
+            return NotImplemented
+        return self.age == other.age
+    
+    def __lt__(self, other):
+        if not isinstance(other, Person):
+            return NotImplemented
+        return self.age < other.age
+    
+    def __hash__(self):
+        return hash((self.name, self.age))
+
+# Usage
+alice = Person("Alice", 30)
+bob = Person("Bob", 25)
+charlie = Person("Charlie", 30)
+
+print(alice == bob)   # False
+print(alice == charlie)  # True
+print(bob < alice)    # True
+print(alice > bob)    # True (from @total_ordering)
+print(alice >= charlie)  # True (from @total_ordering)
+
+# Works with sorting
+people = [alice, bob, charlie]
+print(sorted(people))  # Sorted by age: Bob(25), Alice(30), Charlie(30)</pre>
+                </div>
+                <div class="tip">💡 <strong>Pro tip:</strong> Use @total_ordering decorator to define just __eq__ and one comparison method (e.g., __lt__) and get all others for free!</div>
+            </div>
+
+            <!-- Callable & Context Manager -->
+            <div class="card">
+                <h2>🎯 Callable & Context Manager</h2>
+                <table class="method-table">
+                    <tr><td class="method-name">__call__(self, *args, **kwargs)</td>
+                        <td class="method-desc"><strong>Make instance callable like a function</strong><br>
+                        Enables obj(). Great for closures, decorators, or stateful functions.</td>
+                    </tr>
+                    <tr><td class="method-name">__enter__(self)</td>
+                        <td class="method-desc"><strong>Enter runtime context</strong><br>
+                        Called when entering 'with' block. Should return resource object.</td>
+                    </tr>
+                    <tr><td class="method-name">__exit__(self, exc_type, exc_val, exc_tb)</td>
+                        <td class="method-desc"><strong>Exit runtime context</strong><br>
+                        Called when exiting 'with' block. Can handle exceptions. Return True to suppress exception.</td>
+                    </tr>
+                </table>
+                <div class="example">
+                    <div class="example-title">📘 Example 1: Callable Counter</div>
+                    <pre>class Counter:
+    def __init__(self):
+        self.count = 0
+    
+    def __call__(self, *args, **kwargs):
+        self.count += 1
+        print(f"Called {self.count} times")
+        return self.count
+
+# Usage as callable
+counter = Counter()
+counter()  # Called 1 times
+counter()  # Called 2 times
+print(counter.count)  # 2</pre>
+                    <div class="example-title">📘 Example 2: Context Manager for File Operations</div>
+                    <pre>class ManagedFile:
+    def __init__(self, filename, mode='r'):
+        self.filename = filename
+        self.mode = mode
+        self.file = None
+    
+    def __enter__(self):
+        self.file = open(self.filename, self.mode)
+        return self.file  # Resource to use in 'with' block
+    
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        if self.file:
+            self.file.close()
+        
+        if exc_type:
+            print(f"Exception occurred: {exc_val}")
+            # Return False to propagate exception, True to suppress
+            return False
+
+# Usage
+with ManagedFile('test.txt', 'w') as f:
+    f.write('Hello, World!')
+# File automatically closed even if exception occurs
+
+# Context manager with exception handling
+try:
+    with ManagedFile('test.txt', 'r') as f:
+        content = f.read()
+        print(content)
+except FileNotFoundError:
+    print("File not found")</pre>
+                </div>
+                <div class="note">📌 <strong>Note:</strong> __exit__ receives None for all args if no exception. Return True to suppress exceptions (use carefully!).</div>
+            </div>
+
+            <!-- Descriptor Protocol -->
+            <div class="card">
+                <h2>🔐 Descriptor Protocol (Property Control)</h2>
+                <table class="method-table">
+                    <tr><td class="method-name">__get__(self, instance, owner)</td>
+                        <td class="method-desc">Get attribute value. Called when accessing descriptor attribute.</td>
+                    </tr>
+                    <tr><td class="method-name">__set__(self, instance, value)</td>
+                        <td class="method-desc">Set attribute value. Called when assigning to descriptor attribute.</td>
+                    </tr>
+                    <tr><td class="method-name">__delete__(self, instance)</td>
+                        <td class="method-desc">Delete attribute. Called when deleting descriptor attribute.</td>
+                    </tr>
+                    <tr><td class="method-name">__set_name__(self, owner, name)</td>
+                        <td class="method-desc">Called when descriptor is assigned to class attribute (Python 3.6+).</td>
+                    </tr>
+                </table>
+                <div class="example">
+                    <div class="example-title">📘 Example: Type-checked Attribute Descriptor</div>
+                    <pre>class TypedProperty:
+    def __init__(self, expected_type):
+        self.expected_type = expected_type
+        self.name = None
+    
+    def __set_name__(self, owner, name):
+        # Automatically capture attribute name
+        self.name = name
+    
+    def __get__(self, instance, owner):
+        if instance is None:
+            return self
+        return instance.__dict__.get(self.name)
+    
+    def __set__(self, instance, value):
+        if not isinstance(value, self.expected_type):
+            raise TypeError(f"{self.name} must be {self.expected_type.__name__}")
+        instance.__dict__[self.name] = value
+    
+    def __delete__(self, instance):
+        del instance.__dict__[self.name]
+
+class Person:
+    name = TypedProperty(str)
+    age = TypedProperty(int)
+    
+    def __init__(self, name, age):
+        self.name = name  # Uses descriptor
+        self.age = age    # Uses descriptor
+
+# Usage
+p = Person("Alice", 30)
+print(p.name, p.age)  # Alice 30
+# p.name = 123        # Raises TypeError: name must be str
+# p.age = "thirty"    # Raises TypeError: age must be int</pre>
+                </div>
+                <div class="tip">💡 <strong>Pro tip:</strong> Descriptors power @property, @staticmethod, and @classmethod. Use them for reusable attribute logic!</div>
+            </div>
+
+            <!-- Serialization & Copy -->
+            <div class="card">
+                <h2>💾 Serialization, Copy & Pickling</h2>
+                <table class="method-table">
+                    <tr><td class="method-name">__reduce__(self)</td>
+                        <td class="method-desc">Controls pickling: returns (callable, args, state) tuple.</td>
+                    </tr>
+                    <tr><td class="method-name">__reduce_ex__(self, protocol)</td>
+                        <td class="method-desc">Pickle with specific protocol version.</td>
+                    </tr>
+                    <tr><td class="method-name">__getstate__(self)</td>
+                        <td class="method-desc">What to pickle (return custom state).</td>
+                    </tr>
+                    <tr><td class="method-name">__setstate__(self, state)</td>
+                        <td class="method-desc">Restore state when unpickling.</td>
+                    </tr>
+                    <tr><td class="method-name">__copy__(self)</td>
+                        <td class="method-desc">Shallow copy support for copy.copy().</td>
+                    </tr>
+                    <tr><td class="method-name">__deepcopy__(self, memo)</td>
+                        <td class="method-desc">Deep copy support for copy.deepcopy().</td>
+                    </tr>
+                </table>
+                <div class="example">
+                    <div class="example-title">📘 Example: Custom Pickling with Secret Data</div>
+                    <pre>import pickle
+import copy
+
+class SecureData:
+    def __init__(self, public_data, secret_data):
+        self.public = public_data
+        self._secret = secret_data  # Don't want to pickle this
+    
+    def __repr__(self):
+        return f"SecureData('{self.public}', '***')"
+    
+    def __getstate__(self):
+        # What gets pickled
+        state = self.__dict__.copy()
+        del state['_secret']  # Remove sensitive data
+        return state
+    
+    def __setstate__(self, state):
+        # Restore object from pickled state
+        self.__dict__.update(state)
+        self._secret = None  # Reset secret after unpickling
+    
+    def __copy__(self):
+        # Shallow copy
+        return SecureData(self.public, None)
+    
+    def __deepcopy__(self, memo):
+        # Deep copy
+        return SecureData(copy.deepcopy(self.public, memo), None)
+
+# Usage
+data = SecureData("hello", "super_secret_123")
+pickled = pickle.dumps(data)
+restored = pickle.loads(pickled)
+print(restored.public)  # hello
+print(restored._secret)  # None (secret not restored)</pre>
+                </div>
+                <div class="note">⚠️ <strong>Security note:</strong> Never unpickle data from untrusted sources! Pickle can execute arbitrary code.</div>
+            </div>
+
+            <!-- Other Useful Methods -->
+            <div class="card">
+                <h2>✨ Special & Advanced Methods</h2>
+                <table class="method-table">
+                    <tr><td class="method-name">__instancecheck__(self, instance)</td>
+                        <td class="method-desc">Override isinstance() behavior (for metaclasses).</td>
+                    </tr>
+                    <tr><td class="method-name">__subclasscheck__(self, subclass)</td>
+                        <td class="method-desc">Override issubclass() behavior (for metaclasses).</td>
+                    </tr>
+                    <tr><td class="method-name">__subclasses__(self)</td>
+                        <td class="method-desc">Return list of immediate subclasses.</td>
+                    </tr>
+                    <tr><td class="method-name">__class_getitem__(cls, key)</td>
+                        <td class="method-desc">Support for generic types: List[int] (Python 3.7+).</td>
+                    </tr>
+                    <tr><td class="method-name">__index__(self)</td>
+                        <td class="method-desc">Convert to integer for indexing/slicing (e.g., bin(), hex()).</td>
+                    </tr>
+                    <tr><td class="method-name">__int__(self)</td>
+                        <td class="method-desc">Convert to int: int(obj).</td>
+                    </tr>
+                    <tr><td class="method-name">__float__(self)</td>
+                        <td class="method-desc">Convert to float: float(obj).</td>
+                    </tr>
+                    <tr><td class="method-name">__complex__(self)</td>
+                        <td class="method-desc">Convert to complex: complex(obj).</td>
+                    </tr>
+                    <tr><td class="method-name">__round__(self, n)</td>
+                        <td class="method-desc">Round: round(obj, n).</td>
+                    </tr>
+                    <tr><td class="method-name">__trunc__(self)</td>
+                        <td class="method-desc">Truncate: math.trunc(obj).</td>
+                    </tr>
+                    <tr><td class="method-name">__floor__(self)</td>
+                        <td class="method-desc">Floor: math.floor(obj).</td>
+                    </tr>
+                    <tr><td class="method-name">__ceil__(self)</td>
+                        <td class="method-desc">Ceiling: math.ceil(obj).</td>
+                    </tr>
+                </table>
+                <div class="example">
+                    <div class="example-title">📘 Example: Advanced Indexing & Type Hints</div>
+                    <pre>class CustomIndex:
+    def __init__(self, value):
+        self.value = value
+    
+    def __index__(self):
+        # Allows use as index in slicing
+        return self.value
+    
+    def __int__(self):
+        return self.value
+    
+    def __round__(self, ndigits=0):
+        return CustomIndex(round(self.value, ndigits))
+
+class GenericContainer:
+    def __class_getitem__(cls, key):
+        # Support for Generic[T] syntax
+        print(f"Creating generic container with type: {key}")
+        return f"Container[{key.__name__}]"
+
+# Usage with indexing
+idx = CustomIndex(3)
+items = [10, 20, 30, 40, 50]
+print(items[idx])  # 40 (index 3)
+
+# Generic type hint support
+print(GenericContainer[int])  # Creating generic container with type: &lt;class 'int'&gt;
+
+# Custom numeric conversions
+num = CustomIndex(42)
+print(bin(num))   # 0b101010 (uses __index__)
+print(int(num))   # 42</pre>
+                </div>
+                <div class="tip">💡 <strong>Pro tip:</strong> __index__ is crucial for custom numeric types that need to be used as slice indices or in binary/hex conversions.</div>
+            </div>
+
+            <!-- Async Methods -->
+            <div class="card">
+                <h2>⚡ Asynchronous Methods (Async/Await)</h2>
+                <table class="method-table">
+                    <tr><td class="method-name">__await__(self)</td>
+                        <td class="method-desc">Return iterator for awaitable object. Enables await obj.</td>
+                    </tr>
+                    <tr><td class="method-name">__aiter__(self)</td>
+                        <td class="method-desc">Return async iterator for async for loops.</td>
+                    </tr>
+                    <tr><td class="method-name">__anext__(self)</td>
+                        <td class="method-desc">Return awaitable for next item in async iterator.</td>
+                    </tr>
+                    <tr><td class="method-name">__aenter__(self)</td>
+                        <td class="method-desc">Enter async context manager (async with).</td>
+                    </tr>
+                    <tr><td class="method-name">__aexit__(self, exc_type, exc_val, exc_tb)</td>
+                        <td class="method-desc">Exit async context manager.</td>
+                    </tr>
+                </table>
+                <div class="example">
+                    <div class="example-title">📘 Example: Async Context Manager & Iterator</div>
+                    <pre>import asyncio
+
+class AsyncResource:
+    async def __aenter__(self):
+        print("Acquiring async resource...")
+        await asyncio.sleep(0.1)
+        return self
+    
+    async def __aexit__(self, exc_type, exc_val, exc_tb):
+        print("Releasing async resource...")
+        await asyncio.sleep(0.1)
+    
+    async def do_work(self):
+        print("Doing async work")
+        await asyncio.sleep(0.1)
+
+class AsyncCounter:
+    def __init__(self, limit):
+        self.limit = limit
+        self.current = 0
+    
+    def __aiter__(self):
+        return self
+    
+    async def __anext__(self):
+        if self.current >= self.limit:
+            raise StopAsyncIteration
+        self.current += 1
+        await asyncio.sleep(0.1)
+        return self.current
+
+# Usage
+async def main():
+    # Async context manager
+    async with AsyncResource() as resource:
+        await resource.do_work()
+    
+    # Async iterator
+    async for num in AsyncCounter(5):
+        print(f"Count: {num}")
+
+# asyncio.run(main())  # Uncomment to run</pre>
+                </div>
+                <div class="note">📌 <strong>Note:</strong> Async methods require Python 3.5+ and are used with asyncio and async/await syntax.</div>
+            </div>
+        </div>
+
+        <footer>
+            <p>🎓 <strong>Magic Methods Summary:</strong> These special methods (also called "dunder" methods) enable your classes to integrate seamlessly with Python's built-in behavior.</p>
+            <p>💡 <strong>Best Practices:</strong> Only implement magic methods when needed. Always call super() when overriding to maintain parent class behavior.</p>
+            <p>🔗 <strong>Remember:</strong> Magic methods are looked up on the class, not instance. Avoid dynamic addition of magic methods after class definition.</p>
+            <p style="margin-top: 15px;">✨ <strong>Complete Reference:</strong> Covers 50+ magic methods with practical examples for real-world Python development!</p>
+        </footer>
+    </div>
+</body>
+</html>
